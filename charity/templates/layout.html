@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+  </head>
+  <body>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Charity</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url_for('charity_web.index')}}">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('charity_web.index')}}">Greating</a>
+          </li>
+          <!-- Add more navigation links here -->
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="#">{{ current_user.username}}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('auth.logout')}}">Deconnexion</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('auth.login')}}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('auth.register')}}">Register</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <div id="flash-message">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class="list">
+          {% for message in messages %}
+            <li class="alert alert info" role="alert"> {{ message }}</li>
+          {% endfor %}
+        </ul> 
+        {% endif %}
+        {% endwith %}
+      </div>
+
+      <div id="content">{% block content %}{% endblock %}</div>
+    </div>
+
+    <footer class="footer bg-dark text-light mt-4 py-3">
+      <div class="container">
+        {% block footer %}
+        &copy; 2024 Your Company
+        {% endblock %}
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script>
+      $(document).ready(function(){
+        $('#loading').hide();
+        $('#form-don').submit(function(event){
+          
+        $('#loading').show();
+          event.preventDefault();
+          var form_data = $(this).serialize();
+          $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: form_data,
+            success: function(response) {
+              if (response.success) {
+                $('#flash-message').empty();
+                $('#total_dons').text(response.total_dons);
+                $('#modal-don').modal('hide');
+                $('#flash-message').append('<li class="alert alert info" role="alert"> Merci pour votre don</li>')
+              } else {
+                console.log('error');
+                $('#modal-don').modal('hide');
+                $('#flash-message').append('<li class="alert alert danger" role="alert"> Votre don n\'a pas abouti!</li>')
+              }
+            },
+            error: function() {
+                console.log('error');
+                $('#modal-don').modal('hide');
+                $('#flash-message').append('<li class="alert alert danger" role="alert"> Votre don n\'a pas abouti!</li>')
+            },
+            complete: function() {
+              $('#loading').hide();
+            }
+          })
+        })
+      })
+    </script>
+  </body>
+</html>

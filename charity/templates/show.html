@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="media">
+    <img class="align-self-center mr-3" src="{{ url_for('charity_web.static', filename='charity_img/' + projet.image) }}"
+        alt="{{ projet.libelle }}">
+    <div class="media-body">
+        <h1 class="mt-0">{{ projet.libelle }}</h1>
+        <p>{{ projet.categorie.libelle }}</p>
+        <p> Montant : <span id="total_dons">{{ total_dons }}</span> FCFA</p>
+        <p class="mb-0">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-don">
+                Faire un don
+            </button>
+        </p>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="modal-don" tabindex="-1" role="dialog" aria-labelledby="modal-don-title" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3" id="form-don" action="{{ url_for('charity_web.don') }}" method="post">
+            
+            <input class="form-control" name="projet_id" value="{{projet.id}}" hidden>
+            <div class="col-md-6">
+              <label for="identifiant" class="form-label">Un nom</label>
+              <input type="text" class="form-control" name="identifiant" id="identifiant" placeholder="identifiant">
+            </div>
+            <div class="col-md-6">
+              <label for="montant" class="form-label">Montant du don</label>
+              <input type="number" class="form-control" name="montant" id="montant" placeholder="montant">
+            </div>
+            <div class="col-12">
+              <label for="telephone" class="form-label">Telephone</label>
+              <input type="tel" class="form-control" name="telephone" id="telephone" placeholder="Numero de mobile money">
+            </div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="modePayement" id="modePayement1" value="TMONEY" checked>
+                <label class="form-check-label" for="modePayement1">
+                  Tmoney
+                </label>
+              </div>        
+            </div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="modePayement" id="modePayement2" value="FLOOZ">
+                <label class="form-check-label" for="modePayement2">
+                  Moov
+                </label>
+              </div>        
+            </div>
+            <div class="col-12 mt-3">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Valider</button>
+
+              <div id="loading" class="text-danger">En cours...</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
